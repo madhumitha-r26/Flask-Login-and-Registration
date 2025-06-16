@@ -1,5 +1,6 @@
 from flask import *
-from flask_mysqldb import MySQL                   
+from flask_mysqldb import MySQL   
+from MySQLdb.cursors import DictCursor                
 from dotenv import load_dotenv                    
 import os                                          
 
@@ -28,7 +29,11 @@ def welcome():
 
 @app.route('/admin')
 def admin():
-    return render_template('admin.html')  
+    cur2=mysql.connection.cursor()
+    cur2.execute("SELECT * FROM emp")
+    data2=cur2.fetchall()
+    cur2.close()
+    return render_template('admin.html',user_data=data2)  
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -40,7 +45,7 @@ def login():
         if (email == "admin@gmail.com" and password=="admin123"):
             return redirect(url_for('admin'))
     
-        cur = mysql.connection.cursor()
+        cur = mysql.connection.cursor(cursorclass=DictCursor)
         cur.execute("SELECT * FROM emp WHERE email=%s AND password=%s", (email, password))
         data = cur.fetchone()
         cur.close()
@@ -50,6 +55,10 @@ def login():
             return render_template('login.html')
 
         else:
+            session['loggedin'] = True
+            session['id'] = data['id']
+            session['username'] = data['username']
+            session['email'] = data['email']
             return redirect(url_for('welcome'))
     
     return render_template('login.html')
@@ -84,6 +93,7 @@ def register():
             return redirect(url_for('login'))
 
     return render_template('register.html')
+
 
 if __name__ == "__main__":
     app.run(debug=True)
