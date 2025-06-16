@@ -1,0 +1,21 @@
+body{
+    margin: 25px;
+    padding: 25px;
+}
+
+a{
+    text-decoration: none;
+}
+
+.emp_details {
+  display: flex;
+  gap: 20px;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  align-content: stretch;
+  border: blueviolet 2px solid;
+  width: 25%;
+  height: auto;
+}
